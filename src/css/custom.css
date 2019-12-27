@@ -1,0 +1,84 @@
+body {
+  /* [START] Prevent scrolling on body */
+  overflow: hidden;
+  /* [END] Prevent scrolling on body */
+}
+
+/* [START] Colors */
+.accent {
+  color: #ff9e37;
+}
+
+.bg-accent {
+  background-color: #ff9e37;
+}
+
+.b--accent {
+  border-color: #ff9e37;
+}
+
+.base {
+  color: #111c77;
+}
+
+.bg-base {
+  background-color: #111c77;
+}
+
+.b--base {
+  border-color: #111c77;
+}
+
+.editor-gray {
+  color: #fefefe;
+}
+
+.bg-editor-gray {
+  background-color: #fefefe;
+}
+
+.b--editor-gray {
+  border-color: #fefefe;
+}
+/* [END] Colors */
+
+/* [START] Create a column that fills the page vertically */
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-no-shrink {
+  flex-shrink: 1 0 auto;
+}
+
+.flex-shrink {
+  flex-shrink: 1;
+}
+
+.flex-grow {
+  flex: 1;
+}
+/* [END] Create a column that fills the page vertically */
+
+/* [START] Remove borders from inputs and text areas */
+textarea,
+input {
+  outline: none;
+  border: none;
+}
+/* [END] Remove borders from inputs and text areas */
+
+/* [START]  Node Label */
+#node-label {
+  font-size: 1em;
+  overflow-wrap: break-word;
+  word-break: break-all;
+}
+/* [END] Node Label */
+
+/* [START] Draft */
+.editor :global(.public-DraftEditor-content) {
+  overflow: auto;
+}
+/* [END] Draft */
