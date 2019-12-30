@@ -7,7 +7,7 @@ import { withRouter, RouteComponentProps } from "react-router";
 // Utils
 import { trim } from "lodash";
 import { UserSession, makeUUID4 } from "blockstack";
-import { createCapture, clearAll } from "../../data/store/captures";
+import { createCapture, clearAll } from "../../data/store/store";
 import { Capture } from "../../data/models/capture";
 
 // Types

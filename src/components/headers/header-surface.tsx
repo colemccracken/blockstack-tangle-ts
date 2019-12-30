@@ -8,7 +8,7 @@ import { RouteComponentProps, withRouter } from "react-router";
 import SearchInput from "../inputs/input-surface";
 import Header from "./header";
 import { UserSession } from "blockstack";
-import { clearAll } from "../../data/store/captures";
+import { clearAll } from "../../data/store/store";
 
 // Utils
 

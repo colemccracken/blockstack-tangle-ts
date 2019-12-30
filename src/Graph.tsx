@@ -13,6 +13,7 @@ import "echarts/lib/chart/graph";
 // Config / Utils
 import { isEqual, uniqBy, findIndex } from "lodash";
 import windowSize from "react-window-size";
+import { Trash } from "react-feather";
 
 // Types
 import { GraphNode, NodeType } from "./data/models/node";
@@ -21,6 +22,7 @@ import CardCapture from "./CardCapture";
 import { GraphEvent } from "./data/models/graph-event";
 import { UserSession } from "blockstack";
 import CaptureInput from "./components/inputs/input-capture";
+import { deleteCapture } from "./data/store/store";
 
 const TAG_COLOR = "#333333";
 const CAPTURE_COLOR = "#FF9E37";
@@ -103,7 +105,10 @@ class GraphVisualization extends React.Component<Props, State> {
         default:
           return {
             id: node.id,
-            name: node.text,
+            name:
+              node.text.length > 40
+                ? `${node.text.substring(0, 30)}...`
+                : node.text,
             category: node.type,
             symbolSize: 24,
             // label: {
@@ -307,13 +312,14 @@ class GraphVisualization extends React.Component<Props, State> {
           {focusNode && (
             <div className={`absolute relative top-1 left-1 z-5`}>
               <div
-                className={`absolute top-1 right-1 pa2 pointer ba br4 f7 bg-white b--accent accent`}
+                className={`absolute top-0 right-0 pa1 pointer ba br4 f7 bg-white b--accent accent`}
                 style={{ userSelect: "none" }}
-                onClick={() => {
-                  this.setState({ focusNode: null });
+                onClick={async () => {
+                  await deleteCapture(this.props.userSession, focusNode.id);
+                  await this.props.refreshData(this.props.userSession);
                 }}
               >
-                Hide
+                <Trash size={16} />
               </div>
 
               <CardCapture

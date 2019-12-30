@@ -2,7 +2,7 @@ export interface GraphNode {
   __typename: "Node";
   id: string;
   type: NodeType;
-  text: string | null;
+  text: string;
 }
 
 export enum NodeType {

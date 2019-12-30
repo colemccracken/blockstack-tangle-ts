@@ -1,10 +1,8 @@
 import React, { Component } from "react";
-import { fetchData } from "./data/store/captures";
+import { fetchData } from "./data/store/store";
 import { UserSession } from "blockstack";
 import { withRouter, RouteComponentProps } from "react-router";
 import Graph from "./Graph";
-import Input from "./Input";
-import { GraphData } from "./data/models/graph-data";
 import { GraphNode } from "./data/models/node";
 import { Edge } from "./data/models/edge";
 

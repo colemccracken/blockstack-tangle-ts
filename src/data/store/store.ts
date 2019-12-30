@@ -11,6 +11,29 @@ let cachedTags: Map<string, Tag> = new Map();
 const CAPTURE_KEY = "captures.json";
 const TAGS_KEY = "tags.json";
 
+async function deleteCapture(
+  userSession: UserSession,
+  id: string
+): Promise<void> {
+  const remainingCaptures = cachedCaptures.filter(capture => capture.id !== id);
+  if (cachedCaptures.length - remainingCaptures.length !== 1) {
+    console.log("BREAK EARLY");
+    return Promise.resolve();
+  }
+  const newTags = new Map();
+  cachedTags.forEach(tag => {
+    const newCaptures = tag.captures.filter(captureId => captureId !== id);
+    if (newCaptures.length !== 0) {
+      newTags.set(tag.name, { name: tag.name, captures: newCaptures });
+    }
+  });
+  await write(userSession, TAGS_KEY, Array.from(newTags.values()));
+  await write(userSession, CAPTURE_KEY, remainingCaptures);
+  cachedTags = newTags;
+  cachedCaptures = remainingCaptures;
+  return;
+}
+
 async function fetchData(userSession): Promise<GraphData> {
   const captures = await fetchCaptures(userSession);
   const tags = await fetchTags(userSession);
@@ -29,7 +52,6 @@ async function fetchData(userSession): Promise<GraphData> {
     } as GraphNode;
   });
   const edges = buildEdges(captures, tags);
-  console.log(edges);
   return {
     nodes: captureNodes.concat(tagNodes),
     edges: edges
@@ -123,4 +145,4 @@ async function write(
   return userSession.putFile(key, JSON.stringify(data), options);
 }
 
-export { fetchData, createCapture, clearAll };
+export { deleteCapture, fetchData, createCapture, clearAll };
