@@ -8,6 +8,7 @@ import { withRouter, RouteComponentProps } from "react-router";
 import HeaderSurface from "../components/headers/header-surface";
 import DataWrapper from "../DataWrapper";
 import { UserSession } from "blockstack";
+import CaptureInput from "../components/inputs/input-capture";
 // import ReactResizeDetector from "react-resize-detector";
 
 interface Props extends RouteComponentProps {

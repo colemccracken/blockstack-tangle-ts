@@ -17,6 +17,7 @@ class DataWrapper extends React.Component<Props, State> {
   constructor(props) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
+    this.refreshData = this.refreshData.bind(this);
     this.state = {
       nodes: []
     };
@@ -24,11 +25,15 @@ class DataWrapper extends React.Component<Props, State> {
 
   componentDidMount() {
     // ... that takes care of the subscription...
-    const promise = fetchCaptures(this.props.userSession) as Promise<any>;
-    promise.then(nodes => {
-      this.setState({
-        nodes: nodes
-      });
+    this.refreshData(this.props.userSession);
+  }
+
+  async refreshData(userSession: UserSession): Promise<any> {
+    console.log("REFRESH");
+    const promise = fetchCaptures(userSession) as Promise<any>;
+    const nodes = await promise;
+    this.setState({
+      nodes: nodes
     });
   }
 
@@ -43,7 +48,13 @@ class DataWrapper extends React.Component<Props, State> {
     // Notice that we pass through any additional props
     return this.state.nodes ? (
       <div>
-        <Graph nodes={this.state.nodes} edges={[]} {...this.props} />
+        <Graph
+          userSession={this.props.userSession}
+          refreshData={this.refreshData}
+          nodes={this.state.nodes}
+          edges={[]}
+          {...this.props}
+        />
       </div>
     ) : (
       <h1>Loading...</h1>

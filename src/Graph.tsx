@@ -20,7 +20,7 @@ import { Edge } from "./data/models/edge";
 import CardCapture from "./CardCapture";
 import { GraphEvent } from "./data/models/tmp";
 import { UserSession } from "blockstack";
-import Input from "./Input";
+import CaptureInput from "./components/inputs/input-capture";
 
 const TAG_COLOR = "#333333";
 const OTHER_COLOR = "#F4F4F4";
@@ -34,6 +34,7 @@ interface Props extends RouteComponentProps<{}> {
   nodes: Array<Node>;
   edges: Array<Edge>;
   userSession: UserSession;
+  refreshData: (userSession: UserSession) => Promise<any>;
   headerHeight: number;
   // Window Size
   windowWidth: number;
@@ -54,6 +55,7 @@ class GraphVisualization extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
+
     this.state = {
       focusNode: props.nodes && props.nodes[0] ? props.nodes[0] : null,
       nodes: filterDuplicateNodes(props.nodes),
@@ -76,29 +78,6 @@ class GraphVisualization extends React.Component<Props, State> {
       nodes: filterDuplicateNodes(nextProps.nodes),
       edges: nextProps.edges
     });
-  }
-
-  shouldComponentUpdate(nextProps: Props, nextState: State) {
-    if (
-      !isEqual(nextProps.nodes, this.props.nodes) ||
-      !isEqual(nextProps.edges, this.props.edges)
-    ) {
-      return true;
-    }
-
-    if (this.state.focusNode === null && nextState.focusNode !== null) {
-      return true;
-    }
-    if (this.state.focusNode !== null && nextState.focusNode === null) {
-      return true;
-    }
-    if (this.state.focusNode !== null && nextState.focusNode !== null) {
-      if (this.state.focusNode.id !== nextState.focusNode.id) {
-        return true;
-      }
-    }
-
-    return false;
   }
 
   getNodes() {
@@ -200,6 +179,9 @@ class GraphVisualization extends React.Component<Props, State> {
           case NodeType.Tag:
             this.search(e);
             return;
+          case NodeType.Capture:
+            this.setFocusNode(e);
+            return;
           default:
             return;
         }
@@ -299,42 +281,49 @@ class GraphVisualization extends React.Component<Props, State> {
     const { focusNode } = this.state;
 
     return (
-      <div
-        className={`relative vh-100`}
-        style={
-          {
-            // minHeight: `${this.props.windowHeight - this.props.headerHeight}px`
+      <div>
+        <div
+          className={`relative vh-100`}
+          style={
+            {
+              // minHeight: `${this.props.windowHeight - this.props.headerHeight}px`
+            }
           }
-        }
-      >
-        <ReactEchartsCore
-          echarts={echarts}
-          ref={this.props.refEChart}
-          style={{ height: "100%", width: "100%" }}
-          option={this.getOption()}
-          opts={{ renderer: "canvas" }}
-          onEvents={this.getEvents()}
-        />
-        {focusNode && (
-          <div className={`absolute relative top-1 left-1 z-5`}>
-            <div
-              className={`absolute top-1 right-1 pa2 pointer ba br4 f7 bg-white b--accent accent`}
-              style={{ userSelect: "none" }}
-              onClick={() => {
-                this.setState({ focusNode: null });
-              }}
-            >
-              Hide
-            </div>
+        >
+          <ReactEchartsCore
+            echarts={echarts}
+            ref={this.props.refEChart}
+            style={{ height: "100%", width: "100%" }}
+            option={this.getOption()}
+            opts={{ renderer: "canvas" }}
+            onEvents={this.getEvents()}
+          />
+          {focusNode && (
+            <div className={`absolute relative top-1 left-1 z-5`}>
+              <div
+                className={`absolute top-1 right-1 pa2 pointer ba br4 f7 bg-white b--accent accent`}
+                style={{ userSelect: "none" }}
+                onClick={() => {
+                  this.setState({ focusNode: null });
+                }}
+              >
+                Hide
+              </div>
 
-            <CardCapture
-              captureId={focusNode.id}
-              startingHtml={focusNode.text || ""}
-              authorName={null}
+              <CardCapture
+                captureId={focusNode.id}
+                startingHtml={focusNode.text || ""}
+                authorName={null}
+              />
+            </div>
+          )}
+          <div className={`absolute relative top-1 right-1 z-5`}>
+            <CaptureInput
+              userSession={this.props.userSession}
+              refreshData={this.props.refreshData}
             />
           </div>
-        )}
-        <Input />
+        </div>
       </div>
     );
   }

@@ -20,7 +20,7 @@ class CardCapture extends React.Component<Props, State> {
 
   constructor(nextProps: Props) {
     super(nextProps);
-
+    console.log("HERE CARD CAPTURE COMPONENT");
     this.state = {
       isMouseOver: false
     };
@@ -49,11 +49,6 @@ class CardCapture extends React.Component<Props, State> {
           });
         }}
       >
-        {title || "Untitled"}
-        )}
-        {authorName && (
-          <div className={`gray overflow-hidden f6 pb2`}>{authorName}</div>
-        )}
         <div
           className={`f7`}
           dangerouslySetInnerHTML={{

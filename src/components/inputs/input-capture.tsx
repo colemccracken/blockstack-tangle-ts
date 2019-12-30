@@ -4,27 +4,26 @@ import * as React from "react";
 // Router
 import { withRouter, RouteComponentProps } from "react-router";
 
-// Components
-import SearchButton from "./../buttons/button-surface";
-
 // Utils
 import { trim } from "lodash";
+import { UserSession, makeUUID4 } from "blockstack";
+import { createCapture, clearAll } from "../../data/store/captures";
 
 // Types
 interface RouteProps extends RouteComponentProps<{}> {}
 
-interface Props extends RouteProps {}
+interface Props extends RouteProps {
+  userSession: UserSession;
+  refreshData: (userSession: UserSession) => Promise<any>;
+}
 
 interface State {
   text: string;
 }
 
-const MAX_LENGTH_SEARCH = 100; // characters
-
-class SearchInput extends React.Component<Props, State> {
+class CaptureInput extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-
     const query = "";
 
     this.state = {
@@ -33,12 +32,6 @@ class SearchInput extends React.Component<Props, State> {
   }
 
   handleOnChange = e => {
-    const text: string = e.target.value;
-
-    if (text.length >= MAX_LENGTH_SEARCH) {
-      return;
-    }
-
     this.setState({
       text: e.target.value
     });
@@ -48,14 +41,27 @@ class SearchInput extends React.Component<Props, State> {
     this.setState({
       text: ""
     });
+    clearAll(this.props.userSession).then(() => {
+      this.props.refreshData(this.props.userSession);
+    });
   };
 
-  handleSearch = query => {
-    if (!query) {
-      this.handleExit();
-      return;
-    }
+  handleCapture = text => {
+    this.createNewCapture(text);
   };
+
+  createNewCapture(text) {
+    const { userSession } = this.props;
+
+    let capture = {
+      id: makeUUID4(),
+      text: text.trim(),
+      created_at: Date.now()
+    };
+    createCapture(userSession, capture).then(() => {
+      this.props.refreshData(userSession);
+    });
+  }
 
   render() {
     let isSearching = false;
@@ -63,29 +69,16 @@ class SearchInput extends React.Component<Props, State> {
     const query = trim(this.state.text);
 
     return (
-      <div
-        className={`flex ph2 bg-editor-gray br4 ba ${
-          isSearching ? "b--accent" : "b--white"
-        }`}
-      >
-        <div
-          className={`flex-column pa2 justify-around gray`}
-          onClick={() => {
-            this.handleSearch(query);
-          }}
-        >
-          <SearchButton />
-        </div>
+      <div className={`flex ph2 bg-editor-gray br4 ba`}>
         <input
           onKeyDown={e => {
-            if (e.key !== "Enter") {
-              return;
+            if (e.key === "Enter") {
+              this.handleCapture(query);
             }
-            this.handleSearch(query);
           }}
           value={this.state.text}
-          className={`flex-grow pv2 f6`}
-          placeholder={"Search your tangle"}
+          className={`flex-grow pv3 f9`}
+          placeholder={"Capture a thought"}
           onChange={this.handleOnChange}
         />
         {(isSearching || query) && (
@@ -103,4 +96,4 @@ class SearchInput extends React.Component<Props, State> {
   }
 }
 
-export default withRouter(SearchInput);
+export default withRouter(CaptureInput);

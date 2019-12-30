@@ -5,7 +5,7 @@ import * as React from "react";
 import { RouteComponentProps, withRouter } from "react-router";
 
 // Components
-import InputSurface from "../inputs/input-surface";
+import SearchInput from "../inputs/input-surface";
 import Header from "./header";
 import { UserSession } from "blockstack";
 
@@ -65,7 +65,7 @@ class HeaderSurface extends React.Component<Props, State> {
                 minWidth: "20em"
               }}
             >
-              <InputSurface />
+              <SearchInput />
             </div>
           </React.Fragment>
           /* tslint:disable-next-line */
