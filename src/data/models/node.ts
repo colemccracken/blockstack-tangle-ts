@@ -1,4 +1,4 @@
-export interface Node {
+export interface GraphNode {
   __typename: "Node";
   id: string;
   type: NodeType;

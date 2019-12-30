@@ -8,6 +8,7 @@ import { withRouter, RouteComponentProps } from "react-router";
 import { trim } from "lodash";
 import { UserSession, makeUUID4 } from "blockstack";
 import { createCapture, clearAll } from "../../data/store/captures";
+import { Capture } from "../../data/models/capture";
 
 // Types
 interface RouteProps extends RouteComponentProps<{}> {}
@@ -56,8 +57,8 @@ class CaptureInput extends React.Component<Props, State> {
     let capture = {
       id: makeUUID4(),
       text: text.trim(),
-      created_at: Date.now()
-    };
+      createdAt: Date.now()
+    } as Capture;
     await createCapture(userSession, capture);
     await this.props.refreshData(userSession);
     return;

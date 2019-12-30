@@ -1,16 +1,20 @@
 import React, { Component } from "react";
-import { fetchCaptures } from "./data/store/captures";
+import { fetchData } from "./data/store/captures";
 import { UserSession } from "blockstack";
 import { withRouter, RouteComponentProps } from "react-router";
 import Graph from "./Graph";
 import Input from "./Input";
+import { GraphData } from "./data/models/graph-data";
+import { GraphNode } from "./data/models/node";
+import { Edge } from "./data/models/edge";
 
 interface Props extends RouteComponentProps<{}> {
   userSession: UserSession;
 }
 
 interface State {
-  nodes: Array<Node>;
+  nodes: Array<GraphNode>;
+  edges: Array<Edge>;
 }
 
 class DataWrapper extends React.Component<Props, State> {
@@ -19,7 +23,8 @@ class DataWrapper extends React.Component<Props, State> {
     this.handleChange = this.handleChange.bind(this);
     this.refreshData = this.refreshData.bind(this);
     this.state = {
-      nodes: []
+      nodes: [],
+      edges: []
     };
   }
 
@@ -28,12 +33,13 @@ class DataWrapper extends React.Component<Props, State> {
     this.refreshData(this.props.userSession);
   }
 
-  async refreshData(userSession: UserSession): Promise<any> {
-    const promise = fetchCaptures(userSession) as Promise<any>;
-    const nodes = await promise;
+  async refreshData(userSession: UserSession): Promise<void> {
+    const graph = await fetchData(userSession);
     this.setState({
-      nodes: nodes
+      nodes: graph.nodes,
+      edges: graph.edges
     });
+    return;
   }
 
   handleChange() {
@@ -51,7 +57,7 @@ class DataWrapper extends React.Component<Props, State> {
           userSession={this.props.userSession}
           refreshData={this.refreshData}
           nodes={this.state.nodes}
-          edges={[]}
+          edges={this.state.edges}
           {...this.props}
         />
       </div>

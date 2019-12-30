@@ -15,10 +15,10 @@ import { isEqual, uniqBy, findIndex } from "lodash";
 import windowSize from "react-window-size";
 
 // Types
-import { Node, NodeType } from "./data/models/node";
+import { GraphNode, NodeType } from "./data/models/node";
 import { Edge } from "./data/models/edge";
 import CardCapture from "./CardCapture";
-import { GraphEvent } from "./data/models/tmp";
+import { GraphEvent } from "./data/models/graph-event";
 import { UserSession } from "blockstack";
 import CaptureInput from "./components/inputs/input-capture";
 
@@ -32,7 +32,7 @@ const WIDTH = "30em";
 
 interface Props extends RouteComponentProps<{}> {
   refEChart?: (eChart: ReactEchartsCore) => void;
-  nodes: Array<Node>;
+  nodes: Array<GraphNode>;
   edges: Array<Edge>;
   userSession: UserSession;
   refreshData: (userSession: UserSession) => Promise<any>;
@@ -43,13 +43,13 @@ interface Props extends RouteComponentProps<{}> {
 }
 
 interface State {
-  focusNode: Node | null;
-  nodes: Array<Node>;
+  focusNode: GraphNode | null;
+  nodes: Array<GraphNode>;
   edges: Array<Edge>;
   currentSessionId?: string;
 }
 
-const filterDuplicateNodes = (nodes: Array<Node>) => uniqBy(nodes, "id");
+const filterDuplicateNodes = (nodes: Array<GraphNode>) => uniqBy(nodes, "id");
 
 class GraphVisualization extends React.Component<Props, State> {
   eChart: ReactEchartsCore | null = null;
@@ -58,7 +58,7 @@ class GraphVisualization extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      focusNode: props.nodes && props.nodes[0] ? props.nodes[0] : null,
+      focusNode: null,
       nodes: filterDuplicateNodes(props.nodes),
       edges: props.edges
     };
