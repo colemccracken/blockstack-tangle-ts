@@ -45,9 +45,7 @@ class Navigation extends React.Component<Props, State> {
         <div className={`flex-column flex-grow`}>
           <div
             className={`pa3 bg-animate hover-bg-light-silver bg-accent br-100 pointer`}
-            onClick={() => {
-              console.log("CREATE SESSION");
-            }}
+            onClick={() => {}}
           >
             {/* <ButtonCapture /> */}
           </div>

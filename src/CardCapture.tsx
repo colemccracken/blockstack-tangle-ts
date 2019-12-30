@@ -20,7 +20,6 @@ class CardCapture extends React.Component<Props, State> {
 
   constructor(nextProps: Props) {
     super(nextProps);
-    console.log("HERE CARD CAPTURE COMPONENT");
     this.state = {
       isMouseOver: false
     };

@@ -8,6 +8,7 @@ import { RouteComponentProps, withRouter } from "react-router";
 import SearchInput from "../inputs/input-surface";
 import Header from "./header";
 import { UserSession } from "blockstack";
+import { clearAll } from "../../data/store/captures";
 
 // Utils
 
@@ -49,12 +50,20 @@ class HeaderSurface extends React.Component<Props, State> {
                 </div>
               </div>
             </div>
-            <div
-              className={`pl2 flex-column justify-around`}
-              style={{
-                minWidth: "20em"
-              }}
-            ></div>
+            <div className={`flex`}>
+              <div className={`flex-column justify-around`}>
+                <div
+                  className={"pa2 pointer dim br4 bg-accent light-gray"}
+                  onClick={() => {
+                    clearAll(this.props.userSession).then(() => {
+                      window.location.reload();
+                    });
+                  }}
+                >
+                  <div className={`bb b--accent`}>Nuke</div>
+                </div>
+              </div>
+            </div>
           </React.Fragment>
         }
         right={

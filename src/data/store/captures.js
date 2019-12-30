@@ -9,6 +9,7 @@ const fetchCaptures = userSession => {
   return userSession.getFile("statuses.json", options).then(file => {
     const statuses = JSON.parse(file || "[]");
     cachedCaptures = statuses;
+    console.log(cachedCaptures);
     return statuses.map(status => {
       return {
         id: status.id,

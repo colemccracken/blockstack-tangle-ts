@@ -41,9 +41,6 @@ class CaptureInput extends React.Component<Props, State> {
     this.setState({
       text: ""
     });
-    clearAll(this.props.userSession).then(() => {
-      this.props.refreshData(this.props.userSession);
-    });
   };
 
   handleCapture = text => {

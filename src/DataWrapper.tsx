@@ -29,7 +29,6 @@ class DataWrapper extends React.Component<Props, State> {
   }
 
   async refreshData(userSession: UserSession): Promise<any> {
-    console.log("REFRESH");
     const promise = fetchCaptures(userSession) as Promise<any>;
     const nodes = await promise;
     this.setState({
