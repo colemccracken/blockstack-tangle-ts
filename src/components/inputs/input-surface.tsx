@@ -40,6 +40,10 @@ class SearchInput extends React.Component<Props, State> {
       return;
     }
 
+    if (text === "") {
+      this.props.handleSearch(text);
+    }
+
     this.setState({
       text: e.target.value
     });
