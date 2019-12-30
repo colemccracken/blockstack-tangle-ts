@@ -13,7 +13,10 @@ import { trim } from "lodash";
 // Types
 interface RouteProps extends RouteComponentProps<{}> {}
 
-interface Props extends RouteProps {}
+interface Props extends RouteProps {
+  handleSearch: (query: string) => void;
+  startingQuery: string;
+}
 
 interface State {
   text: string;
@@ -25,10 +28,8 @@ class SearchInput extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    const query = "";
-
     this.state = {
-      text: query
+      text: props.startingQuery
     };
   }
 
@@ -48,13 +49,15 @@ class SearchInput extends React.Component<Props, State> {
     this.setState({
       text: ""
     });
+    this.props.handleSearch("");
   };
 
-  handleSearch = query => {
+  handleSubmit = query => {
     if (!query) {
       this.handleExit();
       return;
     }
+    this.props.handleSearch(query);
   };
 
   render() {
@@ -71,7 +74,7 @@ class SearchInput extends React.Component<Props, State> {
         <div
           className={`flex-column pa2 justify-around gray`}
           onClick={() => {
-            this.handleSearch(query);
+            this.handleSubmit(query);
           }}
         >
           <SearchButton />
@@ -81,7 +84,7 @@ class SearchInput extends React.Component<Props, State> {
             if (e.key !== "Enter") {
               return;
             }
-            this.handleSearch(query);
+            this.handleSubmit(query);
           }}
           value={this.state.text}
           className={`flex-grow pv2 f6`}

@@ -18,6 +18,8 @@ interface RouteProps extends RouteComponentProps<{}> {}
 interface Props extends RouteProps {
   isGraphView: boolean;
   userSession: UserSession;
+  handleSearch: (query: string) => void;
+  startingQuery: string;
 }
 
 interface State {
@@ -74,7 +76,10 @@ class HeaderSurface extends React.Component<Props, State> {
                 minWidth: "20em"
               }}
             >
-              <SearchInput />
+              <SearchInput
+                handleSearch={this.props.handleSearch}
+                startingQuery={this.props.startingQuery}
+              />
             </div>
           </React.Fragment>
           /* tslint:disable-next-line */

@@ -6,9 +6,12 @@ import { withRouter, RouteComponentProps } from "react-router";
 
 // Components
 import HeaderSurface from "../components/headers/header-surface";
-import DataWrapper from "../DataWrapper";
 import { UserSession } from "blockstack";
-import CaptureInput from "../components/inputs/input-capture";
+import { GraphNode } from "../data/models/node";
+import { Edge } from "../data/models/edge";
+import { fetchData, search } from "../data/store/store";
+import Graph from "../Graph";
+
 // import ReactResizeDetector from "react-resize-detector";
 
 interface Props extends RouteComponentProps {
@@ -16,7 +19,9 @@ interface Props extends RouteComponentProps {
 }
 
 interface State {
-  headerHeight: number;
+  nodes: GraphNode[];
+  edges: Edge[];
+  startingQuery: "";
 }
 
 // Class
@@ -24,9 +29,36 @@ class Surface extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
+    this.refreshData = this.refreshData.bind(this);
+    this.handleSearch = this.handleSearch.bind(this);
     this.state = {
-      headerHeight: 0
+      nodes: [],
+      edges: [],
+      startingQuery: ""
     };
+  }
+
+  componentDidMount() {
+    // ... that takes care of the subscription...
+    this.refreshData(this.props.userSession);
+  }
+
+  async refreshData(userSession: UserSession): Promise<void> {
+    const graph = await fetchData(userSession);
+    this.setState({
+      nodes: graph.nodes,
+      edges: graph.edges,
+      startingQuery: ""
+    });
+    return;
+  }
+
+  handleSearch(query: string) {
+    const graph = search(query);
+    this.setState({
+      nodes: graph.nodes,
+      edges: graph.edges
+    });
   }
 
   render() {
@@ -34,11 +66,22 @@ class Surface extends React.Component<Props, State> {
       <div className={`flex-grow bg-near-white bt bl br b--light-gray`}>
         <div className={`flex-column`}>
           <div>
-            <HeaderSurface userSession={this.props.userSession} />
+            <HeaderSurface
+              userSession={this.props.userSession}
+              handleSearch={this.handleSearch}
+              startingQuery={this.handleSearch}
+            />
           </div>
-          <div className={`flex-grow`}>
-            <DataWrapper userSession={this.props.userSession} />
+          <div>
+            <Graph
+              userSession={this.props.userSession}
+              refreshData={this.refreshData}
+              nodes={this.state.nodes}
+              edges={this.state.edges}
+              {...this.props}
+            />
           </div>
+          );
         </div>
       </div>
     );

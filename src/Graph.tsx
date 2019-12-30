@@ -167,7 +167,7 @@ class GraphVisualization extends React.Component<Props, State> {
     ];
   }
 
-  search = (e: GraphEvent) => {
+  searchTag = (e: GraphEvent) => {
     // const query = e.data.name;
     // const path = this.props.location.pathname;
     // const splitPath = path.split("/");
@@ -188,7 +188,7 @@ class GraphVisualization extends React.Component<Props, State> {
       click: (e: GraphEvent) => {
         switch (e.data.category) {
           case NodeType.Tag:
-            this.search(e);
+            this.searchTag(e);
             return;
           case NodeType.Capture:
             this.setFocusNode(e);

@@ -12,6 +12,7 @@
     "blockstack": "^19.2.5",
     "echarts": "^4.0.4",
     "echarts-for-react": "^2.0.15-beta.0",
+    "fuse.js": "^3.4.6",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-feather": "^2.0.3",
