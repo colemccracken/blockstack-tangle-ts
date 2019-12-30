@@ -46,10 +46,7 @@ interface State {
   focusNode: GraphNode | null;
   nodes: Array<GraphNode>;
   edges: Array<Edge>;
-  currentSessionId?: string;
 }
-
-const filterDuplicateNodes = (nodes: Array<GraphNode>) => uniqBy(nodes, "id");
 
 class GraphVisualization extends React.Component<Props, State> {
   eChart: ReactEchartsCore | null = null;
@@ -59,7 +56,7 @@ class GraphVisualization extends React.Component<Props, State> {
 
     this.state = {
       focusNode: null,
-      nodes: filterDuplicateNodes(props.nodes),
+      nodes: props.nodes,
       edges: props.edges
     };
   }
@@ -76,7 +73,7 @@ class GraphVisualization extends React.Component<Props, State> {
 
     this.setState({
       focusNode: focusNodeIndex === -1 ? null : focusNode,
-      nodes: filterDuplicateNodes(nextProps.nodes),
+      nodes: nextProps.nodes,
       edges: nextProps.edges
     });
   }
