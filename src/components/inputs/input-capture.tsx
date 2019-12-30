@@ -48,9 +48,12 @@ class CaptureInput extends React.Component<Props, State> {
 
   handleCapture = text => {
     this.createNewCapture(text);
+    this.setState({
+      text: ""
+    });
   };
 
-  createNewCapture(text) {
+  async createNewCapture(text) {
     const { userSession } = this.props;
 
     let capture = {
@@ -58,9 +61,9 @@ class CaptureInput extends React.Component<Props, State> {
       text: text.trim(),
       created_at: Date.now()
     };
-    createCapture(userSession, capture).then(() => {
-      this.props.refreshData(userSession);
-    });
+    await createCapture(userSession, capture);
+    await this.props.refreshData(userSession);
+    return;
   }
 
   render() {

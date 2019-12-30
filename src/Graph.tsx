@@ -23,6 +23,7 @@ import { UserSession } from "blockstack";
 import CaptureInput from "./components/inputs/input-capture";
 
 const TAG_COLOR = "#333333";
+const CAPTURE_COLOR = "#FF9E37";
 const OTHER_COLOR = "#F4F4F4";
 
 const TEXT_COLOR = "#777777";
@@ -152,6 +153,14 @@ class GraphVisualization extends React.Component<Props, State> {
             color: OTHER_COLOR
           }
         }
+      },
+      {
+        name: NodeType.Capture,
+        itemStyle: {
+          normal: {
+            color: CAPTURE_COLOR
+          }
+        }
       }
     ];
   }
@@ -230,7 +239,7 @@ class GraphVisualization extends React.Component<Props, State> {
               return "";
           }
         },
-        backgroundColor: OTHER_COLOR,
+        backgroundColor: CAPTURE_COLOR,
         textStyle: {
           color: TEXT_COLOR
         }
