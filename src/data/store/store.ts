@@ -14,7 +14,7 @@ const SEARCH_OPTIONS = {
   shouldSort: true,
   threshold: 0.2,
   location: 0,
-  distance: 100,
+  distance: 10000,
   maxPatternLength: 32,
   minMatchCharLength: 1,
   keys: ["text"]
@@ -56,7 +56,7 @@ async function fetchData(userSession): Promise<GraphData> {
 }
 
 function formatGraphData(captures: Capture[]) {
-  const limitedCaptures = captures.slice(0, 100); // too much data screws up graph
+  const limitedCaptures = captures.slice(0, 20); // too much data screws up graph
   const captureNodes = formatCaptures(limitedCaptures);
   const tags = buildTags(limitedCaptures);
   const tagNodes = formatTags(tags);
@@ -175,7 +175,15 @@ async function fetchCaptures(userSession: UserSession): Promise<Capture[]> {
   const options = { decrypt: false };
   const file = await userSession.getFile(CAPTURE_KEY, options);
   const untypedCaptures = JSON.parse((file as string) || "[]");
-  return untypedCaptures;
+  const sorted = untypedCaptures.sort((o1: Capture, o2: Capture) => {
+    if (o1.createdAt < o2.createdAt) {
+      return 1;
+    } else if (o1.createdAt > o2.createdAt) {
+      return -1;
+    }
+    return 0;
+  });
+  return sorted;
 }
 
 function formatCaptures(captures: Capture[]): GraphNode[] {
@@ -190,14 +198,14 @@ function formatCaptures(captures: Capture[]): GraphNode[] {
 
 async function createCaptures(userSession, captures: Capture[]) {
   captures.forEach(capture => {
-    cachedCaptures.push(capture);
+    cachedCaptures.unshift(capture);
   });
   syncCapturesToStorage(userSession);
   return;
 }
 
 async function createCapture(userSession: UserSession, capture: Capture) {
-  cachedCaptures.push(capture);
+  cachedCaptures.unshift(capture);
   syncCapturesToStorage(userSession);
   return;
 }
