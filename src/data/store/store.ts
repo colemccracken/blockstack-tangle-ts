@@ -187,6 +187,14 @@ function formatCaptures(captures: Capture[]): GraphNode[] {
   });
 }
 
+async function createCaptures(userSession, captures: Capture[]) {
+  captures.forEach(capture => {
+    cachedCaptures.push(capture);
+  });
+  await syncCapturesToStorage(userSession);
+  return;
+}
+
 async function createCapture(userSession: UserSession, capture: Capture) {
   cachedCaptures.push(capture);
   syncCapturesToStorage(userSession);
@@ -223,4 +231,11 @@ async function write(
   return userSession.putFile(key, JSON.stringify(data), options);
 }
 
-export { search, deleteCapture, fetchData, createCapture, clearAll };
+export {
+  search,
+  deleteCapture,
+  fetchData,
+  createCaptures,
+  createCapture,
+  clearAll
+};

@@ -9,6 +9,7 @@ import SearchInput from "../inputs/input-surface";
 import Header from "./header";
 import { UserSession } from "blockstack";
 import { clearAll } from "../../data/store/store";
+import MyDropzone from "../inputs/file-upload";
 
 // Utils
 
@@ -43,7 +44,7 @@ class HeaderSurface extends React.Component<Props, State> {
             <div className={`flex`}>
               <div className={`flex-column justify-around`}>
                 <div
-                  className={"pa2 pointer dim br4 bg-accent light-gray"}
+                  className={"mh2 pa2 pointer dim br4 bg-accent light-gray"}
                   onClick={() => {
                     this.props.userSession.signUserOut();
                     window.location.reload();
@@ -56,7 +57,7 @@ class HeaderSurface extends React.Component<Props, State> {
             <div className={`flex`}>
               <div className={`flex-column justify-around`}>
                 <div
-                  className={"pa2 pointer dim br4 bg-accent light-gray"}
+                  className={"mh2 pa2 pointer dim br4 bg-accent light-gray"}
                   onClick={() => {
                     clearAll(this.props.userSession).then(() => {
                       window.location.reload();
@@ -65,6 +66,11 @@ class HeaderSurface extends React.Component<Props, State> {
                 >
                   <div className={`bb b--accent`}>Nuke</div>
                 </div>
+              </div>
+            </div>
+            <div className={`flex`}>
+              <div className={`mh2 pa2 flex-column justify-around ba`}>
+                <MyDropzone userSession={this.props.userSession} />
               </div>
             </div>
           </React.Fragment>
