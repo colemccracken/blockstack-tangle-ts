@@ -38,6 +38,7 @@ interface Props extends RouteComponentProps<{}> {
   edges: Array<Edge>;
   userSession: UserSession;
   refreshData: (userSession: UserSession) => Promise<any>;
+  handleSearch: (query: string) => void;
   headerHeight: number;
   // Window Size
   windowWidth: number;
@@ -168,12 +169,8 @@ class GraphVisualization extends React.Component<Props, State> {
   }
 
   searchTag = (e: GraphEvent) => {
-    // const query = e.data.name;
-    // const path = this.props.location.pathname;
-    // const splitPath = path.split("/");
-    // splitPath.pop();
-    // splitPath.push(`search?query=${encodeURIComponent(query)}`);
-    // this.props.history.push(`${splitPath.join("/")}`);
+    const query = e.data.name;
+    this.props.handleSearch(query);
   };
 
   setFocusNode = (e: GraphEvent) => {

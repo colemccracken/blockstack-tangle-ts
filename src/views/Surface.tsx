@@ -77,6 +77,7 @@ class Surface extends React.Component<Props, State> {
             <Graph
               userSession={this.props.userSession}
               refreshData={this.refreshData}
+              handleSearch={this.handleSearch}
               nodes={this.state.nodes}
               edges={this.state.edges}
               {...this.props}
