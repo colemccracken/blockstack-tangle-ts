@@ -21,7 +21,7 @@ interface Props extends RouteComponentProps {
 interface State {
   nodes: GraphNode[];
   edges: Edge[];
-  startingQuery: "";
+  query: string;
 }
 
 // Class
@@ -34,7 +34,7 @@ class Surface extends React.Component<Props, State> {
     this.state = {
       nodes: [],
       edges: [],
-      startingQuery: ""
+      query: ""
     };
   }
 
@@ -48,7 +48,7 @@ class Surface extends React.Component<Props, State> {
     this.setState({
       nodes: graph.nodes,
       edges: graph.edges,
-      startingQuery: ""
+      query: ""
     });
     return;
   }
@@ -57,7 +57,8 @@ class Surface extends React.Component<Props, State> {
     const graph = search(query);
     this.setState({
       nodes: graph.nodes,
-      edges: graph.edges
+      edges: graph.edges,
+      query: query
     });
   }
 
@@ -69,7 +70,7 @@ class Surface extends React.Component<Props, State> {
             <HeaderSurface
               userSession={this.props.userSession}
               handleSearch={this.handleSearch}
-              startingQuery={this.handleSearch}
+              query={this.state.query}
             />
           </div>
           <div>

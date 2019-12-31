@@ -15,7 +15,7 @@ interface RouteProps extends RouteComponentProps<{}> {}
 
 interface Props extends RouteProps {
   handleSearch: (query: string) => void;
-  startingQuery: string;
+  query: string;
 }
 
 interface State {
@@ -29,8 +29,16 @@ class SearchInput extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      text: props.startingQuery
+      text: props.query
     };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.query !== this.props.query) {
+      this.setState({
+        text: nextProps.query
+      });
+    }
   }
 
   handleOnChange = e => {
@@ -45,7 +53,7 @@ class SearchInput extends React.Component<Props, State> {
     }
 
     this.setState({
-      text: e.target.value
+      text: text
     });
   };
 
