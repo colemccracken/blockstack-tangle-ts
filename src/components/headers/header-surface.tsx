@@ -46,6 +46,7 @@ class HeaderSurface extends React.Component<Props, State> {
                   className={"pa2 pointer dim br4 bg-accent light-gray"}
                   onClick={() => {
                     this.props.userSession.signUserOut();
+                    window.location.reload();
                   }}
                 >
                   <div className={`bb b--accent`}>Logout</div>
