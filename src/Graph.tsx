@@ -307,7 +307,7 @@ class GraphVisualization extends React.Component<Props, State> {
             onEvents={this.getEvents()}
           />
           {focusNode && (
-            <div className={`absolute relative top-1 left-1 z-5`}>
+            <div className={`absolute relative top-1 left-1 z-5 pa2`}>
               <div
                 className={`absolute top-0 right-0 pa1 pointer ba br4 f7 bg-white b--accent accent`}
                 style={{ userSelect: "none" }}
@@ -318,7 +318,6 @@ class GraphVisualization extends React.Component<Props, State> {
               >
                 <Trash size={16} />
               </div>
-
               <CardCapture
                 captureId={focusNode.id}
                 startingHtml={focusNode.text || ""}
@@ -326,7 +325,7 @@ class GraphVisualization extends React.Component<Props, State> {
               />
             </div>
           )}
-          <div className={`absolute relative top-1 right-1 z-5`}>
+          <div className={`absolute top-1 right-1 pa2 ma2`}>
             <CaptureInput
               userSession={this.props.userSession}
               refreshData={this.props.refreshData}

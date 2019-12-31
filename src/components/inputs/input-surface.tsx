@@ -99,7 +99,7 @@ class SearchInput extends React.Component<Props, State> {
             this.handleSubmit(query);
           }}
           value={this.state.text}
-          className={`flex-grow pv2 f6`}
+          className={`pv2 f6`}
           placeholder={"Search your tangle"}
           onChange={this.handleOnChange}
         />

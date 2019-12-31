@@ -67,22 +67,22 @@ class CaptureInput extends React.Component<Props, State> {
   render() {
     let isSearching = false;
 
-    const query = trim(this.state.text);
+    const capture = this.state.text;
 
     return (
-      <div className={`flex ph2 bg-editor-gray br4 ba`}>
+      <div className={`flex ph4 bg-editor-gray br2 `}>
         <input
           onKeyDown={e => {
             if (e.key === "Enter") {
-              this.handleCapture(query);
+              this.handleCapture(capture);
             }
           }}
           value={this.state.text}
-          className={`flex-grow pv3 f9`}
+          className={`flex-grow pv3 f6`}
           placeholder={"Capture a thought"}
           onChange={this.handleOnChange}
         />
-        {(isSearching || query) && (
+        {(isSearching || capture) && (
           <div
             className={`flex-column justify-around f7 pointer`}
             onClick={() => {
