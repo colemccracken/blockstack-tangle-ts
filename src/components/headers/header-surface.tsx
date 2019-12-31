@@ -9,7 +9,6 @@ import SearchInput from "../inputs/input-surface";
 import Header from "./header";
 import { UserSession } from "blockstack";
 import { clearAll } from "../../data/store/store";
-import MyDropzone from "../inputs/file-upload";
 
 // Utils
 
@@ -21,6 +20,7 @@ interface Props extends RouteProps {
   userSession: UserSession;
   handleSearch: (query: string) => void;
   query: string;
+  numNodes: number;
 }
 
 interface State {
@@ -68,15 +68,14 @@ class HeaderSurface extends React.Component<Props, State> {
                 </div>
               </div>
             </div>
-            <div className={`flex`}>
-              <div className={`mh2 pa2 flex-column justify-around ba`}>
-                <MyDropzone userSession={this.props.userSession} />
-              </div>
-            </div>
           </React.Fragment>
         }
         right={
           <React.Fragment>
+            <div className={`pl2 flex-column justify-around`}>
+              {`Node Count: ${this.props.numNodes}`}
+            </div>
+
             <div
               className={`pl2 flex-column justify-around`}
               style={{

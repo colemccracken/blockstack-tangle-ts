@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { RouteComponentProps, withRouter } from "react-router";
 
 import { useDropzone } from "react-dropzone";
-import { createCapture, createCaptures } from "../../data/store/store";
+import { createCaptures } from "../../data/store/store";
 import { UserSession, makeUUID4 } from "blockstack";
 import { Capture } from "../../data/models/capture";
 
@@ -10,6 +10,7 @@ interface RouteProps extends RouteComponentProps<{}> {}
 
 interface Props extends RouteProps {
   userSession: UserSession;
+  refreshData: (userSession: UserSession) => Promise<any>;
 }
 
 function MyDropzone(props: Props) {
@@ -34,8 +35,9 @@ function MyDropzone(props: Props) {
             captures.push(capture);
           }
         });
+        console.log(captures.length);
         await createCaptures(props.userSession, captures);
-        console.log("DONE");
+        props.refreshData(props.userSession);
       };
       reader.readAsBinaryString(file);
     });
@@ -46,11 +48,7 @@ function MyDropzone(props: Props) {
   return (
     <div {...getRootProps()}>
       <input {...getInputProps()} />
-      {isDragActive ? (
-        <p>Drop the files here ...</p>
-      ) : (
-        <p>Drag 'n' drop some files here, or click to select files</p>
-      )}
+      <p>Drag some files here, or click to select files</p>
     </div>
   );
 }

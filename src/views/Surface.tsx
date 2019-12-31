@@ -71,6 +71,7 @@ class Surface extends React.Component<Props, State> {
               userSession={this.props.userSession}
               handleSearch={this.handleSearch}
               query={this.state.query}
+              numNodes={this.state.nodes ? this.state.nodes.length : 0}
             />
           </div>
           <div>

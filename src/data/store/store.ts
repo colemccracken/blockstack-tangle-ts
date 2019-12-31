@@ -1,4 +1,4 @@
-import { UserSession } from "blockstack";
+import { UserSession, containsValidProofStatement } from "blockstack";
 import { GraphNode } from "../models/node";
 import { Edge } from "../models/edge";
 import { Capture } from "../models/capture";
@@ -56,12 +56,13 @@ async function fetchData(userSession): Promise<GraphData> {
 }
 
 function formatGraphData(captures: Capture[]) {
-  const captureNodes = formatCaptures(captures);
-  const tags = buildTags(captures);
+  const limitedCaptures = captures.slice(0, 100); // too much data screws up graph
+  const captureNodes = formatCaptures(limitedCaptures);
+  const tags = buildTags(limitedCaptures);
   const tagNodes = formatTags(tags);
-  const entities = buildEntities(captures);
+  const entities = buildEntities(limitedCaptures);
   const entityNodes = formatEntities(entities);
-  const edges = buildEdges(captures, tags, entities);
+  const edges = buildEdges(limitedCaptures, tags, entities);
   return {
     nodes: captureNodes.concat(tagNodes).concat(entityNodes),
     edges: edges
@@ -191,7 +192,7 @@ async function createCaptures(userSession, captures: Capture[]) {
   captures.forEach(capture => {
     cachedCaptures.push(capture);
   });
-  await syncCapturesToStorage(userSession);
+  syncCapturesToStorage(userSession);
   return;
 }
 
@@ -228,7 +229,9 @@ async function write(
   data: any[]
 ): Promise<string> {
   const options = { encrypt: false };
-  return userSession.putFile(key, JSON.stringify(data), options);
+  const str = JSON.stringify(data);
+  console.log(`Data Size: ${str.length}`);
+  return userSession.putFile(key, str, options);
 }
 
 export {

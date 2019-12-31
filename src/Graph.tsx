@@ -13,7 +13,7 @@ import "echarts/lib/chart/graph";
 // Config / Utils
 import { isEqual, uniqBy, findIndex } from "lodash";
 import windowSize from "react-window-size";
-import { Trash } from "react-feather";
+import { Trash, Minimize2 } from "react-feather";
 
 // Types
 import { GraphNode, NodeType } from "./data/models/node";
@@ -23,6 +23,7 @@ import { GraphEvent } from "./data/models/graph-event";
 import { UserSession } from "blockstack";
 import CaptureInput from "./components/inputs/input-capture";
 import { deleteCapture } from "./data/store/store";
+import MyDropzone from "./components/inputs/file-upload";
 
 const TAG_COLOR = "#333333";
 const CAPTURE_COLOR = "#FF9E37";
@@ -330,6 +331,18 @@ class GraphVisualization extends React.Component<Props, State> {
           {focusNode && (
             <div className={`absolute relative top-1 left-1 z-5 pa2`}>
               <div
+                className={`absolute top-0 right-2 pa1 pointer ba br4 f7 bg-white b--accent accent`}
+                style={{ userSelect: "none" }}
+                onClick={() => {
+                  this.setState({
+                    focusNode: null
+                  });
+                }}
+              >
+                <Minimize2 size={16} />
+              </div>
+
+              <div
                 className={`absolute top-0 right-0 pa1 pointer ba br4 f7 bg-white b--accent accent`}
                 style={{ userSelect: "none" }}
                 onClick={async () => {
@@ -339,6 +352,7 @@ class GraphVisualization extends React.Component<Props, State> {
               >
                 <Trash size={16} />
               </div>
+
               <CardCapture
                 captureId={focusNode.id}
                 startingHtml={focusNode.text || ""}
@@ -346,11 +360,20 @@ class GraphVisualization extends React.Component<Props, State> {
               />
             </div>
           )}
-          <div className={`absolute top-1 right-1 pa2 ma2`}>
-            <CaptureInput
+          <div className={`absolute top-1 left-1 ph2 ma2 ba br2 bg-white`}>
+            <MyDropzone
               userSession={this.props.userSession}
               refreshData={this.props.refreshData}
             />
+          </div>
+
+          <div>
+            <div className={`absolute top-1 right-1 pa2 ma2`}>
+              <CaptureInput
+                userSession={this.props.userSession}
+                refreshData={this.props.refreshData}
+              />
+            </div>
           </div>
         </div>
       </div>
