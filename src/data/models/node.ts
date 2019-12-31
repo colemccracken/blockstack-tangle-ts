@@ -7,5 +7,6 @@ export interface GraphNode {
 
 export enum NodeType {
   Capture = "Capture",
-  Tag = "Tag"
+  Tag = "Tag",
+  Entity = "Entity"
 }

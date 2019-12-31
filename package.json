@@ -10,6 +10,7 @@
     "@types/react": "^16.9.17",
     "@types/react-dom": "^16.9.4",
     "blockstack": "^19.2.5",
+    "compromise": "^12.2.1",
     "echarts": "^4.0.4",
     "echarts-for-react": "^2.0.15-beta.0",
     "fuse.js": "^3.4.6",

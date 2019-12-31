@@ -5,6 +5,8 @@ import { Capture } from "../models/capture";
 import { Tag } from "../models/tag";
 import { GraphData } from "../models/graph-data";
 import Fuse from "fuse.js";
+import nlp from "compromise";
+import { Entity } from "../models/entity";
 
 let cachedCaptures: Capture[] = [];
 let cachedTags: Map<string, Tag> = new Map();
@@ -41,17 +43,6 @@ function search(query): GraphData {
   return formatGraphData(captureHits, tagHits);
 }
 
-function formatGraphData(captures: Capture[], tags: Map<string, Tag>) {
-  const captureNodes = formatCaptures(captures);
-  const tagArray = Array.from(tags.values());
-  const tagNodes = formatTags(tagArray);
-  const edges = buildEdges(captures, tagArray);
-  return {
-    nodes: captureNodes.concat(tagNodes),
-    edges: edges
-  } as GraphData;
-}
-
 async function deleteCapture(
   userSession: UserSession,
   id: string
@@ -80,10 +71,27 @@ async function fetchData(userSession): Promise<GraphData> {
   return formatGraphData(captures, tags);
 }
 
-function buildEdges(captures: Capture[], tags: Tag[]): Edge[] {
+function formatGraphData(captures: Capture[], tags: Map<string, Tag>) {
+  const captureNodes = formatCaptures(captures);
+  const tagNodes = formatTags(tags);
+  const entities = buildEntities(captures);
+  const entityNodes = formatEntities(entities);
+  const edges = buildEdges(captures, tags, entities);
+  return {
+    nodes: captureNodes.concat(tagNodes).concat(entityNodes),
+    edges: edges
+  } as GraphData;
+}
+
+function buildEdges(
+  captures: Capture[],
+  tags: Map<string, Tag>,
+  entities: Map<string, Entity>
+): Edge[] {
   const captureSet = new Set(captures.map(capture => capture.id));
   const edges: Edge[] = [];
-  tags.forEach(tag => {
+  const tagArray = Array.from(tags.values());
+  tagArray.forEach(tag => {
     tag.captures.forEach(captureId => {
       if (captureSet.has(captureId)) {
         edges.push({
@@ -93,7 +101,47 @@ function buildEdges(captures: Capture[], tags: Tag[]): Edge[] {
       }
     });
   });
+  const entityArray = Array.from(entities.values());
+  entityArray.forEach(entity => {
+    entity.captures.forEach(captureId => {
+      if (captureSet.has(captureId)) {
+        edges.push({
+          source: captureId,
+          destination: entity.name
+        } as Edge);
+      }
+    });
+  });
   return edges;
+}
+
+function buildEntities(captures: Capture[]): Map<string, Entity> {
+  const entities: Map<string, Entity> = new Map();
+  captures.map(capture => {
+    const doc = nlp(capture.text);
+    const json = doc.topics().json() as any[];
+    json.forEach(hit => {
+      if (entities.has(hit.text)) {
+        entities.get(hit.text)!.captures.add(capture.id);
+      } else {
+        entities.set(hit.text, {
+          name: hit.text,
+          captures: new Set([capture.id])
+        } as Entity);
+      }
+    });
+  });
+  return entities;
+}
+
+function formatEntities(entities: Map<string, Entity>): GraphNode[] {
+  return Array.from(entities.values()).map(entity => {
+    return {
+      id: entity.name,
+      type: "Entity",
+      text: entity.name
+    } as GraphNode;
+  });
 }
 
 async function fetchTags(userSession): Promise<Map<string, Tag>> {
@@ -107,8 +155,9 @@ async function fetchTags(userSession): Promise<Map<string, Tag>> {
   return cachedTags;
 }
 
-function formatTags(tags: Tag[]): GraphNode[] {
-  return tags.map(tag => {
+function formatTags(tags: Map<string, Tag>): GraphNode[] {
+  const tagArray = Array.from(tags.values());
+  return tagArray.map(tag => {
     return {
       id: tag.name,
       type: "Tag",
@@ -139,6 +188,12 @@ async function createCapture(userSession: UserSession, capture: Capture) {
   await updateTags(userSession, capture);
   cachedCaptures.push(capture);
   return write(userSession, CAPTURE_KEY, cachedCaptures);
+}
+
+async function updateEntities(userSession: UserSession, capture: Capture) {
+  const doc = nlp(capture.text);
+  console.log(doc.topics().json());
+  console.log(doc);
 }
 
 async function updateTags(

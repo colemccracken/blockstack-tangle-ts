@@ -101,6 +101,23 @@ class GraphVisualization extends React.Component<Props, State> {
               }
             }
           };
+        // Entity
+        case NodeType.Entity:
+          return {
+            id: node.id,
+            name: `${node.text}`,
+            category: node.type,
+            symbolSize: 36,
+            label: {
+              show: true,
+              color: TAG_COLOR,
+              fontSize: 12,
+              fontWeight: "bold",
+              emphasis: {
+                show: true
+              }
+            }
+          };
 
         // Captures
         default:
@@ -111,18 +128,11 @@ class GraphVisualization extends React.Component<Props, State> {
                 ? `${node.text.substring(0, 30)}...`
                 : node.text,
             category: node.type,
-            symbolSize: 24,
-            // label: {
-            //   show: true,
-            //   emphasis: {
-            //     show: false
-            //   }
-            // }
+            symbolSize: 18,
             label: {
               show: true,
               color: TAG_COLOR,
               fontSize: 12,
-              fontWeight: "bold",
               emphasis: {
                 show: true
               }
@@ -158,6 +168,14 @@ class GraphVisualization extends React.Component<Props, State> {
         }
       },
       {
+        name: NodeType.Entity,
+        itemStyle: {
+          normal: {
+            color: OTHER_COLOR
+          }
+        }
+      },
+      {
         name: NodeType.Capture,
         itemStyle: {
           normal: {
@@ -168,7 +186,7 @@ class GraphVisualization extends React.Component<Props, State> {
     ];
   }
 
-  searchTag = (e: GraphEvent) => {
+  graphSearch = (e: GraphEvent) => {
     const query = e.data.name;
     this.props.handleSearch(query);
   };
@@ -185,7 +203,10 @@ class GraphVisualization extends React.Component<Props, State> {
       click: (e: GraphEvent) => {
         switch (e.data.category) {
           case NodeType.Tag:
-            this.searchTag(e);
+            this.graphSearch(e);
+            return;
+          case NodeType.Entity:
+            this.graphSearch(e);
             return;
           case NodeType.Capture:
             this.setFocusNode(e);
