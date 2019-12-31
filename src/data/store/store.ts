@@ -8,7 +8,7 @@ import Fuse from "fuse.js";
 import nlp from "compromise";
 import { Entity } from "../models/entity";
 
-let cachedCaptures: Capture[] = [];
+let cachedCaptures: Capture[];
 
 const SEARCH_OPTIONS = {
   shouldSort: true,
@@ -40,14 +40,19 @@ async function deleteCapture(
     return Promise.resolve();
   }
 
-  await write(userSession, CAPTURE_KEY, remainingCaptures);
   cachedCaptures = remainingCaptures;
+  syncCapturesToStorage(userSession);
   return;
 }
 
 async function fetchData(userSession): Promise<GraphData> {
-  const captures = await fetchCaptures(userSession);
-  return formatGraphData(captures);
+  if (cachedCaptures) {
+    return Promise.resolve(formatGraphData(cachedCaptures));
+  } else {
+    const captures = await fetchCaptures(userSession);
+    cachedCaptures = captures;
+    return formatGraphData(captures);
+  }
 }
 
 function formatGraphData(captures: Capture[]) {
@@ -161,8 +166,7 @@ async function fetchCaptures(userSession: UserSession): Promise<Capture[]> {
   const options = { decrypt: false };
   const file = await userSession.getFile(CAPTURE_KEY, options);
   const untypedCaptures = JSON.parse((file as string) || "[]");
-  cachedCaptures = Array.from(untypedCaptures);
-  return cachedCaptures;
+  return untypedCaptures;
 }
 
 function formatCaptures(captures: Capture[]): GraphNode[] {
@@ -177,17 +181,12 @@ function formatCaptures(captures: Capture[]): GraphNode[] {
 
 async function createCapture(userSession: UserSession, capture: Capture) {
   cachedCaptures.push(capture);
-  return write(userSession, CAPTURE_KEY, cachedCaptures);
-}
-
-async function updateEntities(userSession: UserSession, capture: Capture) {
-  const doc = nlp(capture.text);
-  console.log(doc.topics().json());
-  console.log(doc);
+  syncCapturesToStorage(userSession);
+  return;
 }
 
 async function clearAll(userSession): Promise<void> {
-  await write(userSession, CAPTURE_KEY, []);
+  await syncCapturesToStorage(userSession);
   return;
 }
 
@@ -200,6 +199,10 @@ function parseTags(str: string): string[] {
     ret.add(match[1]);
   }
   return Array.from(ret);
+}
+
+async function syncCapturesToStorage(userSession) {
+  return write(userSession, CAPTURE_KEY, cachedCaptures);
 }
 
 async function write(
