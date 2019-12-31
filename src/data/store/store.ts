@@ -105,14 +105,15 @@ function buildTags(captures: Capture[]): Map<string, Tag> {
   captures.map(capture => {
     const captureTags = parseTags(capture.text);
     captureTags.forEach(tagName => {
-      if (tags.has(tagName)) {
+      const name = tagName.toLowerCase();
+      if (tags.has(name)) {
         // update pointers
-        const tag = tags.get(tagName);
+        const tag = tags.get(name);
         tag!.captures.push(capture.id);
       } else {
-        tags.set(tagName, {
-          id: `Tag|${tagName}`,
-          name: tagName,
+        tags.set(name, {
+          id: `Tag|${name}`,
+          name: name,
           captures: [capture.id]
         } as Tag);
       }
@@ -127,12 +128,19 @@ function buildEntities(captures: Capture[]): Map<string, Entity> {
     const doc = nlp(capture.text);
     const json = doc.topics().json() as any[];
     json.forEach(hit => {
-      if (entities.has(hit.text)) {
-        entities.get(hit.text)!.captures.add(capture.id);
+      const name = hit.text.toLowerCase();
+      if (name.startsWith("#")) {
+        return;
+      }
+      if (name === "#china") {
+        console.log(hit);
+      }
+      if (entities.has(name)) {
+        entities.get(name)!.captures.add(capture.id);
       } else {
-        entities.set(hit.text, {
-          id: `Entity|${hit.text}`,
-          name: hit.text,
+        entities.set(name, {
+          id: `Entity|${name}`,
+          name: name,
           captures: new Set([capture.id])
         } as Entity);
       }
@@ -186,6 +194,7 @@ async function createCapture(userSession: UserSession, capture: Capture) {
 }
 
 async function clearAll(userSession): Promise<void> {
+  cachedCaptures = [];
   await syncCapturesToStorage(userSession);
   return;
 }
