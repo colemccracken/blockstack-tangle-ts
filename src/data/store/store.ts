@@ -145,9 +145,6 @@ function buildEntities(captures: Capture[]): Map<string, Entity> {
       if (name.startsWith("#")) {
         return;
       }
-      if (name === "#china") {
-        console.log(hit);
-      }
       if (entities.has(name)) {
         entities.get(name)!.captures.add(capture.id);
       } else {
