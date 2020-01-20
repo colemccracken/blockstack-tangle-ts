@@ -222,7 +222,9 @@ function parseTags(str: string): string[] {
   const ret: Set<string> = new Set();
   let match;
   while ((match = hashtagRegex.exec(str))) {
-    ret.add(match[1]);
+    if (match[1].length > 0) {
+      ret.add(match[1]);
+    }
   }
   return Array.from(ret);
 }
