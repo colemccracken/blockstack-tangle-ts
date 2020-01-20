@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { RouteComponentProps, withRouter } from "react-router";
 
 import { useDropzone } from "react-dropzone";
-import { createCaptures } from "../../data/store/store";
+import { createCaptures, SyncCaptures } from "../../data/store/store";
 import { UserSession, makeUUID4 } from "blockstack";
 import { Capture } from "../../data/models/capture";
 
@@ -15,6 +15,7 @@ interface Props extends RouteProps {
 
 function MyDropzone(props: Props) {
   const onDrop = useCallback(acceptedFiles => {
+    let count = acceptedFiles.length;
     acceptedFiles.forEach(file => {
       const reader = new FileReader();
 
@@ -35,9 +36,12 @@ function MyDropzone(props: Props) {
             captures.push(capture);
           }
         });
-        console.log(captures.length);
-        await createCaptures(props.userSession, captures);
-        props.refreshData(props.userSession);
+        createCaptures(captures);
+        count--;
+        if (count === 0) {
+          await SyncCaptures(props.userSession);
+          props.refreshData(props.userSession);
+        }
       };
       reader.readAsBinaryString(file);
     });

@@ -56,7 +56,7 @@ async function fetchData(userSession): Promise<GraphData> {
 }
 
 function formatGraphData(captures: Capture[]) {
-  const limitedCaptures = captures.slice(0, 20); // too much data screws up graph
+  const limitedCaptures = captures.slice(0, 50); // too much data screws up graph
   const captureNodes = formatCaptures(limitedCaptures);
   const tags = buildTags(limitedCaptures);
   const tagNodes = formatTags(tags);
@@ -196,12 +196,14 @@ function formatCaptures(captures: Capture[]): GraphNode[] {
   });
 }
 
-async function createCaptures(userSession, captures: Capture[]) {
+async function SyncCaptures(userSession) {
+  return await syncCapturesToStorage(userSession);
+}
+
+async function createCaptures(captures: Capture[]) {
   captures.forEach(capture => {
     cachedCaptures.unshift(capture);
   });
-  syncCapturesToStorage(userSession);
-  return;
 }
 
 async function createCapture(userSession: UserSession, capture: Capture) {
@@ -250,5 +252,6 @@ export {
   fetchData,
   createCaptures,
   createCapture,
-  clearAll
+  clearAll,
+  SyncCaptures
 };
