@@ -6,7 +6,6 @@ const avatarFallbackImage =
 export default class Profile extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
       person: {
         name() {
@@ -16,12 +15,20 @@ export default class Profile extends Component {
           return avatarFallbackImage;
         }
       },
-      username: "",
-      newStatus: "",
-      statuses: [],
-      statusIndex: 0,
+      friends: [],
+      newFriend: "",
+      publicUrl: "",
       isLoading: false
     };
+  }
+
+  componentWillMount() {
+    this.fetchData();
+    const { userSession } = this.props;
+    this.setState({
+      person: new Person(userSession.loadUserData().profile),
+      username: userSession.loadUserData().username
+    });
   }
 
   render() {
@@ -58,6 +65,12 @@ export default class Profile extends Component {
                     </span>
                   )}
                 </div>
+                <div className="col-md-12">
+                  {this.state.isLoading && <span>Loading...</span>}
+                  <div className="status" key={"public url"}>
+                    Public Url For Sharing: {this.state.publicUrl}
+                  </div>
+                </div>
               </div>
             </div>
             {this.isLocal() && (
@@ -65,9 +78,9 @@ export default class Profile extends Component {
                 <div className="col-md-12">
                   <textarea
                     className="input-status"
-                    value={this.state.newStatus}
+                    value={this.state.newFriend}
                     onChange={e => this.handleNewStatusChange(e)}
-                    placeholder="What's on your mind?"
+                    placeholder="Who would you like to befriend?"
                   />
                 </div>
                 <div className="col-md-12 text-right">
@@ -82,9 +95,10 @@ export default class Profile extends Component {
             )}
             <div className="col-md-12 statuses">
               {this.state.isLoading && <span>Loading...</span>}
-              {this.state.statuses.map(status => (
-                <div className="status" key={status.id}>
-                  {status.text}
+              Friends Urls:
+              {this.state.friends.map(friend => (
+                <div className="status" key={friend}>
+                  {friend}
                 </div>
               ))}
             </div>
@@ -93,45 +107,27 @@ export default class Profile extends Component {
       </div>
     ) : null;
   }
-  componentWillMount() {
-    this.fetchData();
-    const { userSession } = this.props;
-    this.setState({
-      person: new Person(userSession.loadUserData().profile),
-      username: userSession.loadUserData().username
-    });
-  }
 
   handleNewStatusChange(event) {
-    this.setState({ newStatus: event.target.value });
+    this.setState({ newFriend: event.target.value });
   }
 
   handleNewStatusSubmit(event) {
-    this.saveNewStatus(this.state.newStatus);
+    this.saveNewStatus(this.state.newFriend);
     this.setState({
-      newStatus: ""
+      newFriend: ""
     });
   }
 
-  saveNewStatus(statusText) {
+  saveNewStatus(newFriend) {
     const { userSession } = this.props;
-    let statuses = this.state.statuses;
-
-    let status = {
-      id: this.state.statusIndex++,
-      text: statusText.trim(),
-      created_at: Date.now()
-    };
-
-    statuses.unshift(status);
+    this.state.friends.unshift(newFriend);
     const options = { encrypt: false };
-    userSession
-      .putFile("statuses.json", JSON.stringify(statuses), options)
-      .then(() => {
-        this.setState({
-          statuses: statuses
-        });
-      });
+    userSession.putFile(
+      "friends.json",
+      JSON.stringify(this.state.friends),
+      options
+    );
   }
   fetchData() {
     const { userSession } = this.props;
@@ -139,14 +135,22 @@ export default class Profile extends Component {
     if (this.isLocal()) {
       const options = { decrypt: false };
       userSession
-        .getFile("statuses.json", options)
-        .then(file => {
-          var statuses = JSON.parse(file || "[]");
+        .getFileUrl("captures.json", options)
+        .then(publicUrl => {
           this.setState({
             person: new Person(userSession.loadUserData().profile),
-            username: userSession.loadUserData().username,
-            statusIndex: statuses.length,
-            statuses: statuses
+            publicUrl: publicUrl
+          });
+        })
+        .finally(() => {
+          this.setState({ isLoading: false });
+        });
+      userSession
+        .getFile("friends.json", options)
+        .then(file => {
+          let friends = JSON.parse(file || "[]");
+          this.setState({
+            friends: friends
           });
         })
         .finally(() => {
@@ -164,26 +168,11 @@ export default class Profile extends Component {
         })
         .catch(error => {
           console.log("could not resolve profile");
-        });
-      const options = { username: username, decrypt: false };
-      userSession
-        .getFile("statuses.json", options)
-        .then(file => {
-          var statuses = JSON.parse(file || "[]");
-          this.setState({
-            statusIndex: statuses.length,
-            statuses: statuses
-          });
-        })
-        .catch(error => {
-          console.log("could not fetch statuses");
-        })
-        .finally(() => {
-          this.setState({ isLoading: false });
+          console.log(error);
         });
     }
   }
   isLocal() {
-    return !this.props.match.params.username;
+    return this.props.match.params.username === "me";
   }
 }

@@ -70,6 +70,7 @@ class Surface extends React.Component<Props, State> {
             <HeaderSurface
               userSession={this.props.userSession}
               handleSearch={this.handleSearch}
+              refreshData={this.refreshData}
               query={this.state.query}
               numNodes={this.state.nodes ? this.state.nodes.length : 0}
             />

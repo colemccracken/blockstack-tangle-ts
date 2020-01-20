@@ -19,6 +19,7 @@ interface Props extends RouteProps {
   isGraphView: boolean;
   userSession: UserSession;
   handleSearch: (query: string) => void;
+  refreshData: (userSession: UserSession) => Promise<any>;
   query: string;
   numNodes: number;
 }
@@ -65,6 +66,18 @@ class HeaderSurface extends React.Component<Props, State> {
                   }}
                 >
                   <div className={`bb b--accent`}>Nuke</div>
+                </div>
+              </div>
+            </div>
+            <div className={`flex`}>
+              <div className={`flex-column justify-around`}>
+                <div
+                  className={"mh2 pa2 pointer dim br4 bg-accent light-gray"}
+                  onClick={() => {
+                    this.props.refreshData(this.props.userSession);
+                  }}
+                >
+                  <div className={`bb b--accent`}>Refresh</div>
                 </div>
               </div>
             </div>

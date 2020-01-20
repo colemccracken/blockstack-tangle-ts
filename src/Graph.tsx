@@ -24,9 +24,11 @@ import { UserSession } from "blockstack";
 import CaptureInput from "./components/inputs/input-capture";
 import { deleteCapture } from "./data/store/store";
 import MyDropzone from "./components/inputs/file-upload";
+import { notDeepEqual } from "assert";
 
 const TAG_COLOR = "#333333";
 const CAPTURE_COLOR = "#FF9E37";
+const FRIEND_COLOR = "#45b6fe";
 const OTHER_COLOR = "#F4F4F4";
 
 const TEXT_COLOR = "#777777";
@@ -130,6 +132,11 @@ class GraphVisualization extends React.Component<Props, State> {
                 : node.text,
             category: node.type,
             symbolSize: 18,
+            itemStyle: {
+              normal: {
+                color: node.author === "" ? CAPTURE_COLOR : FRIEND_COLOR
+              }
+            },
             label: {
               show: true,
               color: TAG_COLOR,

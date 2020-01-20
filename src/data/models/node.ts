@@ -3,6 +3,7 @@ export interface GraphNode {
   id: string;
   type: NodeType;
   text: string;
+  author: string;
 }
 
 export enum NodeType {
