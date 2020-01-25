@@ -330,7 +330,7 @@ class GraphVisualization extends React.Component<Props, State> {
           <ReactEchartsCore
             echarts={echarts}
             ref={this.props.refEChart}
-            style={{ height: "100%", width: "100%" }}
+            style={{ height: "85%", width: "100%" }}
             option={this.getOption()}
             opts={{ renderer: "canvas" }}
             onEvents={this.getEvents()}
@@ -348,18 +348,18 @@ class GraphVisualization extends React.Component<Props, State> {
               >
                 <Minimize2 size={16} />
               </div>
-
-              <div
-                className={`absolute top-0 right-0 pa1 pointer ba br4 f7 bg-white b--accent accent`}
-                style={{ userSelect: "none" }}
-                onClick={async () => {
-                  await deleteCapture(this.props.userSession, focusNode.id);
-                  await this.props.refreshData(this.props.userSession);
-                }}
-              >
-                <Trash size={16} />
-              </div>
-
+              {focusNode.author === "" && (
+                <div
+                  className={`absolute top-0 right-0 pa1 pointer ba br4 f7 bg-white b--accent accent`}
+                  style={{ userSelect: "none" }}
+                  onClick={async () => {
+                    await deleteCapture(this.props.userSession, focusNode.id);
+                    await this.props.refreshData(this.props.userSession);
+                  }}
+                >
+                  <Trash size={16} />
+                </div>
+              )}
               <CardCapture
                 captureId={focusNode.id}
                 startingHtml={focusNode.text || ""}
@@ -367,7 +367,7 @@ class GraphVisualization extends React.Component<Props, State> {
               />
             </div>
           )}
-          <div className={`absolute top-1 left-1 ph2 ma2 ba br2 bg-white`}>
+          <div className={`absolute bottom-1-m right-1 ph2 ma2 bg-white`}>
             <MyDropzone
               userSession={this.props.userSession}
               refreshData={this.props.refreshData}

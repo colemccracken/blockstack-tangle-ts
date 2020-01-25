@@ -1,4 +1,8 @@
-import { UserSession, containsValidProofStatement } from "blockstack";
+import {
+  UserSession,
+  containsValidProofStatement,
+  makeUUID4
+} from "blockstack";
 import { GraphNode } from "../models/node";
 import { Edge } from "../models/edge";
 import { Capture } from "../models/capture";
@@ -23,7 +27,7 @@ const SEARCH_OPTIONS = {
   keys: ["text"]
 };
 
-const CAPTURE_KEY = "captures.json";
+const PUBLIC_CAPTURE_KEY = "public_captures.json";
 const FRIEND_KEY = "friends.json";
 
 function search(query): GraphData {
@@ -200,7 +204,7 @@ async function fetchCaptures(userSession: UserSession): Promise<Capture[]> {
 
 async function fetchMyCaptures(userSession: UserSession): Promise<Capture[]> {
   const options = { decrypt: false };
-  const file = await userSession.getFile(CAPTURE_KEY, options);
+  const file = await userSession.getFile(PUBLIC_CAPTURE_KEY, options);
   const myCaptures = JSON.parse((file as string) || "[]");
   return myCaptures.map(capture => {
     capture.owner = true;
@@ -212,7 +216,7 @@ async function fetchFriendCaptures(friends: Friend[]): Promise<Capture[]> {
   // TODO call axios
   return Promise.resolve([
     ({
-      id: "freindsID",
+      id: makeUUID4(),
       text: "THIS COMES FROM FRIENDS",
       owner: false,
       createdAt: Date.now()
@@ -273,7 +277,8 @@ function parseTags(str: string): string[] {
 }
 
 async function syncCapturesToStorage(userSession) {
-  return write(userSession, CAPTURE_KEY, cachedCaptures);
+  const myCaptures = cachedCaptures.filter(capture => capture.owner);
+  return write(userSession, PUBLIC_CAPTURE_KEY, myCaptures);
 }
 
 async function write(
@@ -283,7 +288,6 @@ async function write(
 ): Promise<string> {
   const options = { encrypt: false };
   const str = JSON.stringify(data);
-  console.log(`Data Size: ${str.length}`);
   return userSession.putFile(key, str, options);
 }
 

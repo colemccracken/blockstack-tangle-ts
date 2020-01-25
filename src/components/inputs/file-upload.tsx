@@ -31,7 +31,8 @@ function MyDropzone(props: Props) {
             const capture = {
               id: makeUUID4(),
               text: block.trim(),
-              createdAt: Date.now()
+              createdAt: Date.now(),
+              owner: true
             } as Capture;
             captures.push(capture);
           }

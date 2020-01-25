@@ -3,6 +3,7 @@ import * as React from "react";
 
 // Router
 import { RouteComponentProps, withRouter } from "react-router";
+import { Link } from "react-router-dom";
 
 // Components
 import SearchInput from "../inputs/input-surface";
@@ -78,6 +79,15 @@ class HeaderSurface extends React.Component<Props, State> {
                   }}
                 >
                   <div className={`bb b--accent`}>Refresh</div>
+                </div>
+              </div>
+            </div>
+            <div className={`flex`}>
+              <div className={`flex-column justify-around`}>
+                <div className={"mh2 pa2 pointer dim br4 bg-accent light-gray"}>
+                  <Link className={`bb b--accent`} to={"/me"}>
+                    Profile
+                  </Link>
                 </div>
               </div>
             </div>

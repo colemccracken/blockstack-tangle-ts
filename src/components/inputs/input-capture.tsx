@@ -57,7 +57,8 @@ class CaptureInput extends React.Component<Props, State> {
     let capture = {
       id: makeUUID4(),
       text: text.trim(),
-      createdAt: Date.now()
+      createdAt: Date.now(),
+      owner: true
     } as Capture;
     await createCapture(userSession, capture);
     await this.props.refreshData(userSession);
