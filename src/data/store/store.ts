@@ -28,7 +28,7 @@ const SEARCH_OPTIONS = {
   keys: ["text"]
 };
 
-const PUBLIC_CAPTURE_KEY = "public_captures.json";
+const PRIVATE_CAPTURE_KEY = "private_captures.json";
 const FRIEND_KEY = "friends.json";
 
 function search(query): GraphData {
@@ -205,7 +205,7 @@ async function fetchCaptures(userSession: UserSession): Promise<Capture[]> {
 
 async function fetchMyCaptures(userSession: UserSession): Promise<Capture[]> {
   const options = { decrypt: true };
-  const file = await userSession.getFile(PUBLIC_CAPTURE_KEY, options);
+  const file = await userSession.getFile(PRIVATE_CAPTURE_KEY, options);
   const myCaptures = JSON.parse((file as string) || "[]");
   return myCaptures.map(capture => {
     capture.owner = true;
@@ -272,7 +272,7 @@ function parseTags(str: string): string[] {
 
 async function syncCapturesToStorage(userSession) {
   const myCaptures = cachedCaptures.filter(capture => capture.owner);
-  return write(userSession, PUBLIC_CAPTURE_KEY, myCaptures);
+  return write(userSession, PRIVATE_CAPTURE_KEY, myCaptures);
 }
 
 async function write(
