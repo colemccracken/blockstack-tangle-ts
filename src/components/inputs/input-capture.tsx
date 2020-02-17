@@ -9,6 +9,7 @@ import { trim } from "lodash";
 import { UserSession, makeUUID4 } from "blockstack";
 import { createCapture, clearAll } from "../../data/store/store";
 import { Capture } from "../../data/models/capture";
+import { string } from "prop-types";
 
 // Types
 interface RouteProps extends RouteComponentProps<{}> {}
@@ -45,6 +46,9 @@ class CaptureInput extends React.Component<Props, State> {
   };
 
   handleCapture = text => {
+    if (!/[^\s]/.test(text)) {
+      return;
+    }
     this.createNewCapture(text);
     this.setState({
       text: ""
@@ -71,7 +75,7 @@ class CaptureInput extends React.Component<Props, State> {
     const capture = this.state.text;
 
     return (
-      <div className={`flex ph4 bg-editor-gray br2 `}>
+      <div className={`flex ph4 bg-editor-gray br2 ma1 pv3`}>
         <input
           onKeyDown={e => {
             if (e.key === "Enter") {
@@ -79,7 +83,7 @@ class CaptureInput extends React.Component<Props, State> {
             }
           }}
           value={this.state.text}
-          className={`flex-grow pv3 f6`}
+          className={`flex-grow f6`}
           placeholder={"Capture a thought"}
           onChange={this.handleOnChange}
         />

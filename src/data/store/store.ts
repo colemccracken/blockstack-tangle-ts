@@ -1,7 +1,8 @@
 import {
   UserSession,
   containsValidProofStatement,
-  makeUUID4
+  makeUUID4,
+  network
 } from "blockstack";
 import { GraphNode } from "../models/node";
 import { Edge } from "../models/edge";

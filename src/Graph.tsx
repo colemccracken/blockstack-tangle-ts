@@ -367,15 +367,8 @@ class GraphVisualization extends React.Component<Props, State> {
               />
             </div>
           )}
-          <div className={`absolute bottom-1-m right-1 ph2 ma2 bg-white`}>
-            <MyDropzone
-              userSession={this.props.userSession}
-              refreshData={this.props.refreshData}
-            />
-          </div>
-
           <div>
-            <div className={`absolute top-1 right-1 pa2 ma2`}>
+            <div className={`pb7 mw7 center`}>
               <CaptureInput
                 userSession={this.props.userSession}
                 refreshData={this.props.refreshData}

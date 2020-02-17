@@ -53,7 +53,7 @@ function MyDropzone(props: Props) {
   return (
     <div {...getRootProps()}>
       <input {...getInputProps()} />
-      <p>Drag some files here, or click to select files</p>
+      Upload
     </div>
   );
 }

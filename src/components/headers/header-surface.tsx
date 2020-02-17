@@ -11,6 +11,7 @@ import SearchInput from "../inputs/input-surface";
 import Header from "./header";
 import { UserSession } from "blockstack";
 import { clearAll } from "../../data/store/store";
+import MyDropzone from "../../components/inputs/file-upload";
 
 // Utils
 
@@ -68,14 +69,11 @@ class HeaderSurface extends React.Component<Props, State> {
           <React.Fragment>
             <div className={`flex`}>
               <div className={`flex-column justify-around`}>
-                <div
-                  className={"mh2 pa2 pointer dim br4 bg-accent light-gray"}
-                  onClick={() => {
-                    this.props.userSession.signUserOut();
-                    window.location.reload();
-                  }}
-                >
-                  <div className={`bb b--accent`}>Logout</div>
+                <div className={"mh2 pa2 pointer dim br4 bg-accent light-gray"}>
+                  <MyDropzone
+                    userSession={this.props.userSession}
+                    refreshData={this.props.refreshData}
+                  />
                 </div>
               </div>
             </div>
@@ -88,6 +86,19 @@ class HeaderSurface extends React.Component<Props, State> {
                   }}
                 >
                   <div className={`bb b--accent`}>Refresh</div>
+                </div>
+              </div>
+            </div>
+            <div className={`flex`}>
+              <div className={`flex-column justify-around`}>
+                <div
+                  className={"mh2 pa2 pointer dim br4 bg-accent light-gray"}
+                  onClick={() => {
+                    this.props.userSession.signUserOut();
+                    window.location.reload();
+                  }}
+                >
+                  <div className={`bb b--accent`}>Logout</div>
                 </div>
               </div>
             </div>
