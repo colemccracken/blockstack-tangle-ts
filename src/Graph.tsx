@@ -97,7 +97,7 @@ class GraphVisualization extends React.Component<Props, State> {
             label: {
               show: true,
               color: TAG_COLOR,
-              fontSize: 12,
+              fontSize: 18,
               fontWeight: "bold",
               emphasis: {
                 show: true
@@ -114,7 +114,7 @@ class GraphVisualization extends React.Component<Props, State> {
             label: {
               show: true,
               color: TAG_COLOR,
-              fontSize: 12,
+              fontSize: 18,
               fontWeight: "bold",
               emphasis: {
                 show: true
