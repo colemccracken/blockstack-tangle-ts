@@ -72,7 +72,7 @@ async function fetchData(userSession): Promise<GraphData> {
 }
 
 function formatGraphData(captures: Capture[]) {
-  const limitedCaptures = captures.slice(0, 50); // too much data screws up graph
+  const limitedCaptures = captures; // TODO limit this somehow in future
   const captureNodes = formatCaptures(limitedCaptures);
   const tags = buildTags(limitedCaptures);
   const tagNodes = formatTags(tags);
@@ -203,7 +203,7 @@ async function fetchCaptures(userSession: UserSession): Promise<Capture[]> {
 }
 
 async function fetchMyCaptures(userSession: UserSession): Promise<Capture[]> {
-  const options = { decrypt: false };
+  const options = { decrypt: true };
   const file = await userSession.getFile(PUBLIC_CAPTURE_KEY, options);
   const myCaptures = JSON.parse((file as string) || "[]");
   return myCaptures.map(capture => {
@@ -214,14 +214,7 @@ async function fetchMyCaptures(userSession: UserSession): Promise<Capture[]> {
 
 async function fetchFriendCaptures(friends: Friend[]): Promise<Capture[]> {
   // TODO call axios
-  return Promise.resolve([
-    ({
-      id: makeUUID4(),
-      text: "THIS COMES FROM FRIENDS",
-      owner: false,
-      createdAt: Date.now()
-    } as unknown) as Capture
-  ]);
+  return Promise.resolve([]);
 }
 
 function formatCaptures(captures: Capture[]): GraphNode[] {
@@ -286,7 +279,7 @@ async function write(
   key: string,
   data: any[]
 ): Promise<string> {
-  const options = { encrypt: false };
+  const options = { encrypt: true };
   const str = JSON.stringify(data);
   return userSession.putFile(key, str, options);
 }

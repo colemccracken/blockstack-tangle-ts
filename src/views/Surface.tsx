@@ -45,7 +45,6 @@ class Surface extends React.Component<Props, State> {
 
   async refreshData(userSession: UserSession): Promise<void> {
     const graph = await fetchData(userSession);
-    console.log(graph);
     this.setState({
       nodes: graph.nodes,
       edges: graph.edges,

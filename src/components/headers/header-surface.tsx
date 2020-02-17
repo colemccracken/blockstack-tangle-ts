@@ -82,15 +82,6 @@ class HeaderSurface extends React.Component<Props, State> {
                 </div>
               </div>
             </div>
-            <div className={`flex`}>
-              <div className={`flex-column justify-around`}>
-                <div className={"mh2 pa2 pointer dim br4 bg-accent light-gray"}>
-                  <Link className={`bb b--accent`} to={"/me"}>
-                    Profile
-                  </Link>
-                </div>
-              </div>
-            </div>
           </React.Fragment>
         }
         right={
