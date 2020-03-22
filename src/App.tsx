@@ -43,7 +43,7 @@ export default class App extends Component {
                   )}
                 />
                 <Route
-                  path="/tangle/:tangleId"
+                  path="/tangle/:username/:tangleId"
                   render={routeProps => (
                     <Surface userSession={userSession} match={routeProps} />
                   )}

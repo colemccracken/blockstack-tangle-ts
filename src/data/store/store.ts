@@ -7,10 +7,10 @@ import { GraphData } from "../models/graph-data";
 import Fuse from "fuse.js";
 import nlp from "compromise";
 import { Entity } from "../models/entity";
-import { Friend } from "../models/friend";
+import { all } from "q";
 
 let cachedCaptures: Capture[];
-let cachedFriends: Friend[];
+let otherCaptures: Capture[];
 
 const SEARCH_OPTIONS = {
   shouldSort: true,
@@ -22,8 +22,7 @@ const SEARCH_OPTIONS = {
   keys: ["text"]
 };
 
-const PRIVATE_CAPTURE_KEY = "private_captures.json";
-const FRIEND_KEY = "friends.json";
+const PRIVATE_CAPTURE_KEY = "captures.json";
 
 function search(query): GraphData {
   if (query === "") {
@@ -48,14 +47,6 @@ async function deleteCapture(
   return;
 }
 
-async function fetchFriends(userSession): Promise<Friend[]> {
-  const options = { decrypt: false };
-  const file = await userSession.getFile(FRIEND_KEY, options);
-  const friends = JSON.parse(file || "[]");
-  cachedFriends = friends;
-  return friends;
-}
-
 async function fetchData(userSession: UserSession): Promise<GraphData> {
   if (cachedCaptures) {
     return Promise.resolve(formatGraphData(cachedCaptures));
@@ -66,6 +57,24 @@ async function fetchData(userSession: UserSession): Promise<GraphData> {
   }
 }
 
+async function loadPublic(
+  username: string,
+  tangleId: string
+): Promise<Capture[]> {
+  const options = {
+    user: username,
+    app: "http://locahlost:3000"
+  };
+  const userSession = new UserSession();
+  const file = await userSession.getFile(tangleId, options);
+  const myCaptures = JSON.parse((file as string) || "[]");
+  const retCaptures = myCaptures.map(capture => {
+    capture.owner = false;
+    return capture;
+  });
+  // otherCaptures = retCaptures;
+  return retCaptures;
+}
 async function publish(userSession: UserSession): Promise<string> {
   const username = userSession.loadUserData().username;
   const uuid = makeUUID4();
@@ -188,12 +197,11 @@ function formatTags(tags: Map<string, Tag>): GraphNode[] {
 }
 
 async function fetchCaptures(userSession: UserSession): Promise<Capture[]> {
-  if (!cachedFriends) {
-    fetchFriends(userSession);
-  }
   const myCaptures = await fetchMyCaptures(userSession);
-  const otherCaptures = await fetchFriendCaptures(cachedFriends);
-  const allCaptures = myCaptures.concat(otherCaptures);
+  let allCaptures = myCaptures;
+  if (otherCaptures && otherCaptures.length > 0) {
+    allCaptures = myCaptures.concat(otherCaptures);
+  }
   const sorted = allCaptures.sort((o1: Capture, o2: Capture) => {
     if (o1.createdAt < o2.createdAt) {
       return 1;
@@ -207,17 +215,27 @@ async function fetchCaptures(userSession: UserSession): Promise<Capture[]> {
 
 async function fetchMyCaptures(userSession: UserSession): Promise<Capture[]> {
   const options = { decrypt: true };
-  const file = await userSession.getFile(PRIVATE_CAPTURE_KEY, options);
-  const myCaptures = JSON.parse((file as string) || "[]");
-  return myCaptures.map(capture => {
-    capture.owner = true;
-    return capture;
-  });
-}
-
-async function fetchFriendCaptures(friends: Friend[]): Promise<Capture[]> {
-  // TODO call axios
-  return Promise.resolve([]);
+  console.log(userSession);
+  let myCaptures;
+  try {
+    const file = await userSession.getFile(PRIVATE_CAPTURE_KEY, options);
+    myCaptures = JSON.parse((file as string) || "[]");
+  } catch (e) {
+    console.log(e);
+    myCaptures = [];
+  }
+  return myCaptures
+    .filter(capture => {
+      if (!capture) {
+        console.log("Null capture");
+        return false;
+      }
+      return true;
+    })
+    .map(capture => {
+      capture.owner = true;
+      return capture;
+    });
 }
 
 function formatCaptures(captures: Capture[]): GraphNode[] {

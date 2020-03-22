@@ -27,7 +27,6 @@ interface State {
 class Surface extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    console.log(props);
     this.refreshData = this.refreshData.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
     this.state = {
@@ -38,7 +37,10 @@ class Surface extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    // ... that takes care of the subscription...
+    const tangleId = this.props.match.params.tangleId;
+    const username = this.props.match.params.username;
+    if (tangleId) {
+    }
     this.refreshData(this.props.userSession);
   }
 
@@ -61,7 +63,6 @@ class Surface extends React.Component<Props, State> {
   }
 
   render() {
-    console.log(this.props.match.params.tangleId);
     return (
       <div className={`flex-grow bg-near-white bt bl br b--light-gray`}>
         <div className={`flex-column`}>
