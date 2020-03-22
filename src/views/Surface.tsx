@@ -11,11 +11,10 @@ import { GraphNode } from "../data/models/node";
 import { Edge } from "../data/models/edge";
 import { fetchData, search } from "../data/store/store";
 import Graph from "../Graph";
-
 // import ReactResizeDetector from "react-resize-detector";
-
 interface Props extends RouteComponentProps {
   userSession: UserSession;
+  match: any;
 }
 
 interface State {
@@ -28,7 +27,7 @@ interface State {
 class Surface extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-
+    console.log(props);
     this.refreshData = this.refreshData.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
     this.state = {
@@ -62,6 +61,7 @@ class Surface extends React.Component<Props, State> {
   }
 
   render() {
+    console.log(this.props.match.params.tangleId);
     return (
       <div className={`flex-grow bg-near-white bt bl br b--light-gray`}>
         <div className={`flex-column`}>

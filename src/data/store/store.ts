@@ -1,9 +1,4 @@
-import {
-  UserSession,
-  containsValidProofStatement,
-  makeUUID4,
-  network
-} from "blockstack";
+import { UserSession, makeUUID4 } from "blockstack";
 import { GraphNode } from "../models/node";
 import { Edge } from "../models/edge";
 import { Capture } from "../models/capture";
@@ -13,7 +8,6 @@ import Fuse from "fuse.js";
 import nlp from "compromise";
 import { Entity } from "../models/entity";
 import { Friend } from "../models/friend";
-import { timeout } from "q";
 
 let cachedCaptures: Capture[];
 let cachedFriends: Friend[];
@@ -62,7 +56,7 @@ async function fetchFriends(userSession): Promise<Friend[]> {
   return friends;
 }
 
-async function fetchData(userSession): Promise<GraphData> {
+async function fetchData(userSession: UserSession): Promise<GraphData> {
   if (cachedCaptures) {
     return Promise.resolve(formatGraphData(cachedCaptures));
   } else {
@@ -70,6 +64,14 @@ async function fetchData(userSession): Promise<GraphData> {
     cachedCaptures = captures;
     return formatGraphData(captures);
   }
+}
+
+async function publish(userSession: UserSession): Promise<string> {
+  const username = userSession.loadUserData().username;
+  const uuid = makeUUID4();
+  const myCaptures = cachedCaptures.filter(capture => capture.owner);
+  const p = write(userSession, uuid, myCaptures, false);
+  return p;
 }
 
 function formatGraphData(captures: Capture[]) {
@@ -278,15 +280,17 @@ async function syncCapturesToStorage(userSession) {
 async function write(
   userSession: UserSession,
   key: string,
-  data: any[]
+  data: any[],
+  shouldEncrypt: boolean = true
 ): Promise<string> {
-  const options = { encrypt: true };
+  const options = { encrypt: shouldEncrypt };
   const str = JSON.stringify(data);
   return userSession.putFile(key, str, options);
 }
 
 export {
   search,
+  publish,
   deleteCapture,
   fetchData,
   createCaptures,

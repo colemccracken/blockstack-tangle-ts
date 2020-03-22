@@ -3,7 +3,9 @@ import Profile from "./Profile.js";
 import Signin from "./Signin.js";
 import { UserSession, AppConfig } from "blockstack";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
-import Surface from "./views/Surface.tsx";
+import Surface from "./views/Surface";
+import { withRouter, RouteComponentProps } from "react-router";
+
 const appConfig = new AppConfig(["store_write", "publish_data"]);
 const userSession = new UserSession({ appConfig: appConfig });
 
@@ -31,13 +33,19 @@ export default class App extends Component {
             <BrowserRouter>
               <div>
                 <Route
-                  path="/:username"
+                  path="/profiles/:username"
                   render={routeProps => (
                     <Profile
                       userSession={userSession}
                       handleSignOut={this.handleSignOut}
                       {...routeProps}
                     />
+                  )}
+                />
+                <Route
+                  path="/tangle/:tangleId"
+                  render={routeProps => (
+                    <Surface userSession={userSession} match={routeProps} />
                   )}
                 />
                 <Route
