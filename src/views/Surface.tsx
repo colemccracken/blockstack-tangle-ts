@@ -9,7 +9,7 @@ import HeaderSurface from "../components/headers/header-surface";
 import { UserSession } from "blockstack";
 import { GraphNode } from "../data/models/node";
 import { Edge } from "../data/models/edge";
-import { fetchData, search } from "../data/store/store";
+import { fetchData, search, loadPublic } from "../data/store/store";
 import Graph from "../Graph";
 // import ReactResizeDetector from "react-resize-detector";
 interface Props extends RouteComponentProps {
@@ -36,10 +36,11 @@ class Surface extends React.Component<Props, State> {
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const tangleId = this.props.match.params.tangleId;
     const username = this.props.match.params.username;
     if (tangleId) {
+      await loadPublic(username, tangleId);
     }
     this.refreshData(this.props.userSession);
   }

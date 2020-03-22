@@ -1,4 +1,4 @@
-import { UserSession, makeUUID4 } from "blockstack";
+import { UserSession, makeUUID4, lookupProfile } from "blockstack";
 import { GraphNode } from "../models/node";
 import { Edge } from "../models/edge";
 import { Capture } from "../models/capture";
@@ -7,7 +7,9 @@ import { GraphData } from "../models/graph-data";
 import Fuse from "fuse.js";
 import nlp from "compromise";
 import { Entity } from "../models/entity";
-import { all } from "q";
+import axios from "axios";
+import { file } from "@babel/types";
+import { ripemd160 } from "bitcoinjs-lib/types/crypto";
 
 let cachedCaptures: Capture[];
 let otherCaptures: Capture[];
@@ -61,18 +63,27 @@ async function loadPublic(
   username: string,
   tangleId: string
 ): Promise<Capture[]> {
+  const appStr = "https://tangleapp.io";
   const options = {
-    user: username,
-    app: "http://locahlost:3000"
+    user: "colemccracken.id.blockstack",
+    app: appStr,
+    decrypt: false
   };
   const userSession = new UserSession();
-  const file = await userSession.getFile(tangleId, options);
-  const myCaptures = JSON.parse((file as string) || "[]");
-  const retCaptures = myCaptures.map(capture => {
+  let caps;
+  try {
+    const file = await userSession.getFile(tangleId, options);
+    caps = JSON.parse((file as string) || "[]");
+  } catch (e) {
+    console.log(e);
+    console.log("ERROR");
+    caps = [];
+  }
+  const retCaptures = caps.map(capture => {
     capture.owner = false;
     return capture;
   });
-  // otherCaptures = retCaptures;
+  otherCaptures = retCaptures;
   return retCaptures;
 }
 async function publish(userSession: UserSession): Promise<string> {
@@ -215,7 +226,6 @@ async function fetchCaptures(userSession: UserSession): Promise<Capture[]> {
 
 async function fetchMyCaptures(userSession: UserSession): Promise<Capture[]> {
   const options = { decrypt: true };
-  console.log(userSession);
   let myCaptures;
   try {
     const file = await userSession.getFile(PRIVATE_CAPTURE_KEY, options);
@@ -309,6 +319,7 @@ async function write(
 export {
   search,
   publish,
+  loadPublic,
   deleteCapture,
   fetchData,
   createCaptures,
